@@ -1,0 +1,15 @@
+{
+	"name": "kcb-pos",
+	"main": "worker.js",
+	"compatibility_date": "2024-12-01",
+	"assets": {
+		"directory": "./dist"
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "kcb-pos-db",
+			"database_id": "069d0b4b-8352-4cbb-86f6-a39cd54be7a3"
+		}
+	]
+}

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#f0f2f5" />
+    <meta name="color-scheme" content="light" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <title>King Chinese Bowl — POS System</title>
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="/style.css" />
+</head>
+
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen"
+        style="display:none;position:fixed;inset:0;z-index:99999;background:#f0f2f5;align-items:center;justify-content:center;flex-direction:column;font-family:'Inter',sans-serif;">
+        <div style="text-align:center;margin-bottom:44px;">
+            <div style="font-size:64px;margin-bottom:8px;">👑</div>
+            <h1 style="color:#1a1a2e;font-size:32px;font-weight:800;">King Chinese Bowl</h1>
+            <p style="color:#aaa;font-size:14px;margin-top:6px;">Point of Sale System</p>
+        </div>
+        <div style="display:flex;gap:32px;flex-wrap:wrap;justify-content:center;max-width:760px;padding:0 20px;">
+            <!-- Admin Card -->
+            <div
+                style="background:#fff;border-radius:16px;padding:32px 34px;width:320px;box-shadow:0 4px 20px rgba(0,0,0,0.06);border-top:4px solid #e63946;">
+                <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;">
+                    <div
+                        style="width:52px;height:52px;border-radius:14px;background:#fef0f0;display:flex;align-items:center;justify-content:center;font-size:26px;">
+                        🔐</div>
+                    <div>
+                        <h3 style="font-size:19px;font-weight:700;color:#1a1a2e;margin:0;">Admin Login</h3>
+                        <p style="font-size:12px;color:#aaa;margin:3px 0 0;">Full access to all features &amp; settings
+                        </p>
+                    </div>
+                </div>
+                <input type="text" id="adminUser" placeholder="👤  Username"
+                    style="width:100%;padding:13px 16px;border:1.5px solid #eee;border-radius:12px;margin-bottom:10px;font-size:15px;box-sizing:border-box;outline:none;transition:border .2s,background .2s;background:#fafafa;"
+                    onfocus="this.style.borderColor='#e63946';this.style.background='#fff'"
+                    onblur="this.style.borderColor='#eee';this.style.background='#fafafa'">
+                <input type="password" id="adminPass" placeholder="🔒  Password"
+                    style="width:100%;padding:13px 16px;border:1.5px solid #eee;border-radius:12px;margin-bottom:14px;font-size:15px;box-sizing:border-box;outline:none;transition:border .2s,background .2s;background:#fafafa;"
+                    onfocus="this.style.borderColor='#e63946';this.style.background='#fff'"
+                    onblur="this.style.borderColor='#eee';this.style.background='#fafafa'">
+                <div id="adminError"
+                    style="color:#e63946;font-size:12px;min-height:18px;margin-bottom:8px;text-align:center;"></div>
+                <button id="adminLoginBtn"
+                    style="width:100%;padding:14px;background:#e63946;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:background .2s;letter-spacing:0.3px;"
+                    onmouseover="this.style.background='#d62839'" onmouseout="this.style.background='#e63946'">Login Now
+                    →</button>
+            </div>
+            <!-- Staff Card -->
+            <div
+                style="background:#fff;border-radius:16px;padding:32px 34px;width:320px;box-shadow:0 4px 20px rgba(0,0,0,0.06);border-top:4px solid #2196F3;">
+                <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;">
+                    <div
+                        style="width:52px;height:52px;border-radius:14px;background:#eef5ff;display:flex;align-items:center;justify-content:center;font-size:26px;">
+                        👨‍🍳</div>
+                    <div>
+                        <h3 style="font-size:19px;font-weight:700;color:#1a1a2e;margin:0;">Staff Login</h3>
+                        <p style="font-size:12px;color:#aaa;margin:3px 0 0;">Billing, Kitchen Display &amp; Tables</p>
+                    </div>
+                </div>
+                <input type="text" id="staffUser" placeholder="👤  Username"
+                    style="width:100%;padding:13px 16px;border:1.5px solid #eee;border-radius:12px;margin-bottom:10px;font-size:15px;box-sizing:border-box;outline:none;transition:border .2s,background .2s;background:#fafafa;"
+                    onfocus="this.style.borderColor='#2196F3';this.style.background='#fff'"
+                    onblur="this.style.borderColor='#eee';this.style.background='#fafafa'">
+                <input type="password" id="staffPass" placeholder="🔒  Password"
+                    style="width:100%;padding:13px 16px;border:1.5px solid #eee;border-radius:12px;margin-bottom:14px;font-size:15px;box-sizing:border-box;outline:none;transition:border .2s,background .2s;background:#fafafa;"
+                    onfocus="this.style.borderColor='#2196F3';this.style.background='#fff'"
+                    onblur="this.style.borderColor='#eee';this.style.background='#fafafa'">
+                <div id="staffError"
+                    style="color:#e63946;font-size:12px;min-height:18px;margin-bottom:8px;text-align:center;"></div>
+                <button id="staffLoginBtn"
+                    style="width:100%;padding:14px;background:#2196F3;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:background .2s;letter-spacing:0.3px;"
+                    onmouseover="this.style.background='#1976D2'" onmouseout="this.style.background='#2196F3'">Login Now
+                    →</button>
+            </div>
+        </div>
+        <p style="color:#ccc;font-size:11px;margin-top:44px;">© 2026 King Chinese Bowl • All rights reserved.</p>
+    </div>
+    <div id="app">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">👑</div>
+                <div class="brand-text">
+                    <span class="brand-name">KCB</span>
+                    <span class="brand-sub">POS System</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-screen="billing">
+                    <span class="nav-icon">🧾</span><span class="nav-label">Billing</span>
+                    <span class="nav-badge pulse">POS</span>
+                </a>
+                <a href="#" class="nav-item" data-screen="kds">
+                    <span class="nav-icon">🍳</span><span class="nav-label">Kitchen (KDS)</span>
+                </a>
+                <a href="#" class="nav-item" data-screen="tables">
+                    <span class="nav-icon">🪑</span><span class="nav-label">Tables</span>
+                </a>
+                <div class="nav-divider"></div>
+                <a href="#" class="nav-item" data-screen="settings">
+                    <span class="nav-icon">⚙️</span><span class="nav-label">Settings</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">AK</div>
+                    <div class="user-info">
+                        <span class="user-name">Aamir</span>
+                        <span class="user-role">Owner</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" id="menuToggle">☰</button>
+                    <h1 class="page-title" id="pageTitle">Dashboard</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="topbar-clock" id="topbarClock"></div>
+                    <div class="topbar-status">
+                        <span class="status-dot online"></span>
+                        <span>Online</span>
+                    </div>
+                    <button class="topbar-btn" id="notifBtn">🔔<span class="notif-count">3</span></button>
+                    <button class="topbar-btn fullscreen-btn" id="fullscreenBtn">⛶</button>
+                </div>
+            </header>
+
+            <!-- Screen Container -->
+            <div class="screen-container" id="screenContainer">
+                <!-- All screens rendered here by JS -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Instant restore: handle login state + correct nav before module loads
+        (function () {
+            var loggedIn = sessionStorage.getItem('kcb_loggedIn');
+            var loginEl = document.getElementById('loginScreen');
+            var appEl = document.getElementById('app');
+            if (!loggedIn) {
+                // Not logged in — show login, hide app
+                loginEl.style.display = 'flex';
+                appEl.style.display = 'none';
+                return;
+            }
+            // Logged in — hide login, show app
+            loginEl.style.display = 'none';
+            appEl.style.display = '';
+            var s = localStorage.getItem('kcb_screen') || 'billing';
+            var titles = { dashboard: 'Dashboard', billing: 'Billing & Orders', kds: 'Kitchen Display', tables: 'Table Management', menu: 'Menu Management', inventory: 'Inventory', reports: 'Reports & Analytics', crm: 'Customers (CRM)', staff: 'Staff Management', settings: 'Settings' };
+            document.querySelectorAll('.nav-item').forEach(function (n) { n.classList.toggle('active', n.dataset.screen === s); });
+            var t = document.getElementById('pageTitle'); if (t) t.textContent = titles[s] || 'Billing & Orders';
+            document.getElementById('screenContainer').style.opacity = '0';
+            // Hide settings for staff
+            if (loggedIn === 'staff') {
+                document.querySelectorAll('.nav-item').forEach(function (n) { if (n.dataset.screen === 'settings') n.style.display = 'none'; });
+            }
+        })();
+    </script>
+    <script type="module" src="/main.js"></script>
+</body>
+
+</html>
