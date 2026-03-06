@@ -2385,31 +2385,145 @@ function bindMenu() {
 
 function openMenuItemModal(idx) {
     const isNew = idx === -1;
-    const item = isNew ? { name: '', price: 0, category: CATEGORIES[0]?.id || '', veg: true, spice: 1, tags: [], avail: true } : { ...MENU_ITEMS[idx] };
+    const item = isNew ? { name: '', price: 0, halfPrice: 0, category: CATEGORIES[1]?.id || '', veg: true, spice: 1, tags: [], avail: true } : { ...MENU_ITEMS[idx] };
 
     const { el, close } = modal(`
     <h3 class="modal-heading">${isNew ? '➕ Add Menu Item' : '✏️ Edit — ' + item.name}</h3>
-    <div class="form-field"><label class="form-label">Name</label><input type="text" id="miName" class="input-full" value="${item.name}"></div>
-    <div class="form-row">
-      <div class="form-field"><label class="form-label">Price (₹)</label><input type="number" id="miPrice" class="input-full" value="${item.price}"></div>
-      <div class="form-field"><label class="form-label">Category</label>
-        <select id="miCategory" class="input-full">${CATEGORIES.map(c => `<option value="${c.id}" ${c.id === item.category ? 'selected' : ''}>${c.name}</option>`).join('')}</select>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <!-- LEFT COLUMN -->
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="form-field"><label class="form-label">Item Name *</label><input type="text" id="miName" class="input-full" value="${item.name}" placeholder="e.g. Chicken Schezwan Noodles"></div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="form-field"><label class="form-label">Full Price (₹) *</label><input type="number" id="miPrice" class="input-full" value="${item.price}" min="0" placeholder="250"></div>
+          <div class="form-field"><label class="form-label">Half Price (₹)</label><input type="number" id="miHalfPrice" class="input-full" value="${item.halfPrice || 0}" min="0" placeholder="0 = no half"></div>
+        </div>
+
+        <div class="form-field"><label class="form-label">Category *</label>
+          <select id="miCategory" class="input-full">${CATEGORIES.filter(c => c.id !== 'all').map(c => `<option value="${c.id}" ${c.id === item.category ? 'selected' : ''}>${c.icon} ${c.name}</option>`).join('')}</select>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="form-field"><label class="form-label">Type</label>
+            <div id="miVegToggle" style="display:flex;gap:6px;margin-top:4px">
+              <button class="btn btn-sm ${item.veg ? 'btn-primary' : 'btn-ghost'}" data-val="true" style="flex:1;border-radius:8px;font-size:12px;padding:6px 0;${item.veg ? 'background:#16a34a;border-color:#16a34a' : ''}">🟢 Veg</button>
+              <button class="btn btn-sm ${!item.veg ? 'btn-primary' : 'btn-ghost'}" data-val="false" style="flex:1;border-radius:8px;font-size:12px;padding:6px 0;${!item.veg ? 'background:#dc2626;border-color:#dc2626' : ''}">🔴 Non-Veg</button>
+            </div>
+          </div>
+          <div class="form-field"><label class="form-label">Spice Level</label>
+            <div id="miSpiceToggle" style="display:flex;gap:4px;margin-top:4px">
+              ${[0, 1, 2, 3].map(s => `<button class="btn btn-sm ${item.spice === s ? 'btn-primary' : 'btn-ghost'}" data-val="${s}" style="flex:1;border-radius:8px;font-size:11px;padding:6px 0">${s === 0 ? '😊' : s === 1 ? '🌶️' : s === 2 ? '🌶️🌶️' : '🔥🔥🔥'}</button>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="form-field"><label class="form-label">Availability</label>
+          <div id="miAvailToggle" style="display:flex;gap:6px;margin-top:4px">
+            <button class="btn btn-sm ${item.avail ? 'btn-primary' : 'btn-ghost'}" data-val="true" style="flex:1;border-radius:8px;font-size:12px;padding:6px 0;${item.avail ? 'background:#16a34a;border-color:#16a34a' : ''}">✅ Available</button>
+            <button class="btn btn-sm ${!item.avail ? 'btn-primary' : 'btn-ghost'}" data-val="false" style="flex:1;border-radius:8px;font-size:12px;padding:6px 0;${!item.avail ? 'background:#dc2626;border-color:#dc2626' : ''}">🚫 Out of Stock</button>
+          </div>
+        </div>
+
+        <div class="form-field"><label class="form-label">Tags</label>
+          <div id="miTagBtns" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">
+            ${['popular', 'new', 'chef-special', 'bestseller', 'must-try'].map(t => `<button class="btn btn-sm ${(item.tags || []).includes(t) ? 'btn-primary' : 'btn-ghost'}" data-tag="${t}" style="border-radius:20px;font-size:11px;padding:4px 10px">${t === 'popular' ? '⭐' : t === 'new' ? '🆕' : t === 'chef-special' ? '👨‍🍳' : t === 'bestseller' ? '🏆' : '💯'} ${t}</button>`).join('')}
+          </div>
+        </div>
+
+        <div class="form-field" style="flex:1">
+          <label class="form-label">Live Preview</label>
+          <div id="miPreview" style="background:rgba(0,0,0,.03);border-radius:12px;padding:14px;margin-top:4px;min-height:80px;display:flex;align-items:center;gap:12px">
+            <div id="miPreviewCard" style="flex:1">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+                <span id="pvVeg" style="width:10px;height:10px;border:1.5px solid ${item.veg ? '#16a34a' : '#dc2626'};border-radius:2px;display:inline-flex;align-items:center;justify-content:center"><span style="width:5px;height:5px;border-radius:50%;background:${item.veg ? '#16a34a' : '#dc2626'}"></span></span>
+                <span id="pvName" style="font-weight:600;font-size:13px">${item.name || 'Item Name'}</span>
+              </div>
+              <div style="display:flex;gap:10px;align-items:baseline">
+                <span id="pvPrice" style="font-weight:800;color:var(--brand);font-size:15px">₹${item.price || 0}</span>
+                <span id="pvHalf" style="font-size:12px;color:var(--text-s)">${item.halfPrice ? 'Half ₹' + item.halfPrice : ''}</span>
+              </div>
+              <div id="pvSpice" style="font-size:11px;margin-top:2px">${item.spice === 0 ? '' : item.spice === 1 ? '🌶️' : item.spice === 2 ? '🌶️🌶️' : '🔥🔥🔥'}</div>
+              <div id="pvTags" style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap">${(item.tags || []).map(t => `<span style="font-size:10px;background:rgba(230,57,70,.1);color:var(--brand);padding:2px 6px;border-radius:8px">${t}</span>`).join('')}</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="form-row">
-      <div class="form-field"><label class="form-label">Type</label>
-        <select id="miVeg" class="input-full"><option value="true" ${item.veg ? 'selected' : ''}>Veg</option><option value="false" ${!item.veg ? 'selected' : ''}>Non-Veg</option></select>
-      </div>
-      <div class="form-field"><label class="form-label">Spice Level (0-3)</label><input type="number" id="miSpice" class="input-full" value="${item.spice || 0}" min="0" max="3"></div>
-    </div>
-    <div class="form-field"><label class="form-label">Tags (comma-separated: popular, new, chef-special)</label><input type="text" id="miTags" class="input-full" value="${(item.tags || []).join(', ')}"></div>
-    <div class="modal-footer">
+
+    <div class="modal-footer" style="margin-top:16px">
       ${!isNew ? '<button class="btn btn-danger" id="miDelete">🗑️ Delete</button>' : ''}
       <div style="flex:1"></div>
       <button class="btn btn-ghost" id="miCancel">Cancel</button>
-      <button class="btn btn-primary" id="miSave">${isNew ? '➕ Add Item' : '✅ Save'}</button>
+      <button class="btn btn-primary" id="miSave">${isNew ? '➕ Add Item' : '✅ Save Changes'}</button>
     </div>
   `);
+
+    // State
+    let vegVal = item.veg, spiceVal = item.spice ?? 1, availVal = item.avail !== false, selTags = [...(item.tags || [])];
+
+    // Helper to update preview
+    function updatePreview() {
+        const name = el.querySelector('#miName').value.trim() || 'Item Name';
+        const price = parseInt(el.querySelector('#miPrice').value) || 0;
+        const half = parseInt(el.querySelector('#miHalfPrice').value) || 0;
+        const pv = el.querySelector('#miPreviewCard');
+        if (!pv) return;
+        el.querySelector('#pvVeg').style.borderColor = vegVal ? '#16a34a' : '#dc2626';
+        el.querySelector('#pvVeg').querySelector('span').style.background = vegVal ? '#16a34a' : '#dc2626';
+        el.querySelector('#pvName').textContent = name;
+        el.querySelector('#pvPrice').textContent = '₹' + price;
+        el.querySelector('#pvHalf').textContent = half > 0 ? 'Half ₹' + half : '';
+        el.querySelector('#pvSpice').textContent = spiceVal === 0 ? '' : spiceVal === 1 ? '🌶️' : spiceVal === 2 ? '🌶️🌶️' : '🔥🔥🔥';
+        el.querySelector('#pvTags').innerHTML = selTags.map(t => `<span style="font-size:10px;background:rgba(230,57,70,.1);color:var(--brand);padding:2px 6px;border-radius:8px">${t}</span>`).join('');
+    }
+
+    // Live preview on input
+    el.querySelector('#miName').oninput = updatePreview;
+    el.querySelector('#miPrice').oninput = updatePreview;
+    el.querySelector('#miHalfPrice').oninput = updatePreview;
+
+    // Veg toggle
+    el.querySelector('#miVegToggle').querySelectorAll('button').forEach(b => b.onclick = () => {
+        vegVal = b.dataset.val === 'true';
+        el.querySelector('#miVegToggle').querySelectorAll('button').forEach(x => {
+            x.className = `btn btn-sm ${x.dataset.val === String(vegVal) ? 'btn-primary' : 'btn-ghost'}`;
+            x.style.background = x.dataset.val === String(vegVal) ? (vegVal ? '#16a34a' : '#dc2626') : '';
+            x.style.borderColor = x.dataset.val === String(vegVal) ? (vegVal ? '#16a34a' : '#dc2626') : '';
+        });
+        updatePreview();
+    });
+
+    // Spice toggle
+    el.querySelector('#miSpiceToggle').querySelectorAll('button').forEach(b => b.onclick = () => {
+        spiceVal = parseInt(b.dataset.val);
+        el.querySelector('#miSpiceToggle').querySelectorAll('button').forEach(x => {
+            x.className = `btn btn-sm ${parseInt(x.dataset.val) === spiceVal ? 'btn-primary' : 'btn-ghost'}`;
+        });
+        updatePreview();
+    });
+
+    // Availability toggle
+    el.querySelector('#miAvailToggle').querySelectorAll('button').forEach(b => b.onclick = () => {
+        availVal = b.dataset.val === 'true';
+        el.querySelector('#miAvailToggle').querySelectorAll('button').forEach(x => {
+            x.className = `btn btn-sm ${x.dataset.val === String(availVal) ? 'btn-primary' : 'btn-ghost'}`;
+            x.style.background = x.dataset.val === String(availVal) ? (availVal ? '#16a34a' : '#dc2626') : '';
+            x.style.borderColor = x.dataset.val === String(availVal) ? (availVal ? '#16a34a' : '#dc2626') : '';
+        });
+    });
+
+    // Tag pills
+    el.querySelector('#miTagBtns').querySelectorAll('button').forEach(b => b.onclick = () => {
+        const t = b.dataset.tag;
+        if (selTags.includes(t)) { selTags = selTags.filter(x => x !== t); b.className = 'btn btn-sm btn-ghost'; }
+        else { selTags.push(t); b.className = 'btn btn-sm btn-primary'; }
+        b.style.borderRadius = '20px'; b.style.fontSize = '11px'; b.style.padding = '4px 10px';
+        updatePreview();
+    });
 
     el.querySelector('#miCancel').onclick = close;
     if (!isNew) {
@@ -2425,6 +2539,7 @@ function openMenuItemModal(idx) {
     el.querySelector('#miSave').onclick = () => {
         const name = el.querySelector('#miName').value.trim();
         const price = parseInt(el.querySelector('#miPrice').value) || 0;
+        const halfPrice = parseInt(el.querySelector('#miHalfPrice').value) || 0;
         if (!name) { notify('⚠️ Name is required', 'warn'); return; }
         if (price <= 0) { notify('⚠️ Price must be > 0', 'warn'); return; }
 
@@ -2433,11 +2548,12 @@ function openMenuItemModal(idx) {
             name,
             price,
             category: el.querySelector('#miCategory').value,
-            veg: el.querySelector('#miVeg').value === 'true',
-            spice: parseInt(el.querySelector('#miSpice').value) || 0,
-            tags: el.querySelector('#miTags').value.split(',').map(t => t.trim()).filter(Boolean),
-            avail: item.avail !== undefined ? item.avail : true
+            veg: vegVal,
+            spice: spiceVal,
+            tags: selTags,
+            avail: availVal
         };
+        if (halfPrice > 0) data.halfPrice = halfPrice;
 
         if (isNew) {
             MENU_ITEMS.push(data);
